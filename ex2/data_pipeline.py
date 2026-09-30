@@ -110,7 +110,7 @@ class DataStream:
     def __init__(self) -> None:
         self._processor: list[DataProcessor] = []
 
-    def register_processors(self, proc: DataProcessor) -> None:
+    def register_processor(self, proc: DataProcessor) -> None:
         self._processor.append(proc)
 
     def process_stream(self, stream: list[Any]) -> None:
@@ -120,10 +120,10 @@ class DataStream:
                     proc.ingest(item)
                     break
             else:
-                print("DataStream error - Can't procces element in stream:",
+                print("DataStream error - Can't proccess element in stream:",
                       f"{item}")
 
-    def print_processor_stats(self) -> None:
+    def print_processors_stats(self) -> None:
         print("== DataStream statistics ==")
         if not self._processor:
             print("No processor found, no data")
@@ -171,30 +171,31 @@ def main() -> None:
                  [{'log_level': 'WARNING',
                    'log_message': 'Telnet access! Use ssh instead'},
                   {'log_level': 'INFO',
-                  'log_message': 'User wil isconnected'}],
+                  'log_message': 'User wil is connected'}],
                  42,
                  ['Hi', 'five']]
     data_stream = DataStream()
-    data_stream.print_processor_stats()
+    print()
+    data_stream.print_processors_stats()
     print()
     print("Registering processors\n")
     num_processor = NumericProcessor()
     text_processor = TextProcessor()
     log_processor = LogProcessor()
-    data_stream.register_processors(num_processor)
-    data_stream.register_processors(text_processor)
-    data_stream.register_processors(log_processor)
+    data_stream.register_processor(num_processor)
+    data_stream.register_processor(text_processor)
+    data_stream.register_processor(log_processor)
     print(f"Sending first batch of stream of data: {data_list}")
     data_stream.process_stream(data_list)
     print()
-    data_stream.print_processor_stats()
+    data_stream.print_processors_stats()
     print()
     print("Send 3 processed data from each processor to a CSV Plugin")
     csv_plugin = CSVPlugin()
     json_plugin = JSONPlugin()
     data_stream.output_pipeline(3, csv_plugin)
     print()
-    data_stream.print_processor_stats()
+    data_stream.print_processors_stats()
     data_list_2 = [21, ['I love AI', 'LLMs are wonderful', 'Stay healthy'],
                    [{'log_level': 'ERROR', 'log_message': '500 server crash'},
                     {'log_level': 'NOTICE',
@@ -204,12 +205,12 @@ def main() -> None:
     print(f"Send another batch of data: {data_list_2}")
     data_stream.process_stream(data_list_2)
     print()
-    data_stream.print_processor_stats()
+    data_stream.print_processors_stats()
     print()
     print("Send 5 processed data from each processor to a JSON plugin")
     data_stream.output_pipeline(5, json_plugin)
     print()
-    data_stream.print_processor_stats()
+    data_stream.print_processors_stats()
 
 
 if __name__ == "__main__":

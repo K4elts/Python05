@@ -91,8 +91,7 @@ class LogProcessor(DataProcessor):
 def test_log_processor() -> None:
     print("Testing LogProcessor...")
     processor_1 = LogProcessor()
-    print("Trying to validate input 'Hello':",
-          f"{processor_1.validate("Hello")}")
+    print(f"Trying to validate input 'Hello': {processor_1.validate('Hello')}")
     data_lst = [{'log_level': 'NOTICE', 'log_message': 'Connection to server'},
                 {'log_level': 'ERROR', 'log_message': 'Unauthorized access!!'}]
     print(f"Processing data: {data_lst}")
@@ -121,10 +120,8 @@ def test_numeric_processor() -> None:
     print("Testing NumericProcessor...")
     processor_1 = NumericProcessor()
     print(f"Trying to validate input '42': {processor_1.validate(42)}")
-    print("Trying to validate input 'Hello':",
-          f"{processor_1.validate("Hello")}")
-    print("Test invalid ingestion of string 'foo'",
-          "without prior validation:")
+    print(f"Trying to validate input 'Hello': {processor_1.validate('Hello')}")
+    print("Test invalid ingestion of string 'foo' without prior validation:")
     try:
         processor_1.ingest("foo")
     except TypeError:
@@ -140,12 +137,17 @@ def test_numeric_processor() -> None:
 
 
 def main() -> None:
-    print()
-    test_numeric_processor()
-    print()
-    test_text_processor()
-    print()
-    test_log_processor()
+    try:
+        print()
+        test_numeric_processor()
+        print()
+        test_text_processor()
+        print()
+        test_log_processor()
+    except IndexError as e:
+        print(f"Index error: {e}")
+    except KeyError as e:
+        print(f"Key error: {e}")
 
 
 if __name__ == "__main__":

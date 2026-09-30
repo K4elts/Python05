@@ -105,7 +105,7 @@ class DataStream:
     def __init__(self) -> None:
         self._processor: list[DataProcessor] = []
 
-    def register_processors(self, proc: DataProcessor) -> None:
+    def register_processor(self, proc: DataProcessor) -> None:
         self._processor.append(proc)
 
     def process_stream(self, stream: list[Any]) -> None:
@@ -115,16 +115,16 @@ class DataStream:
                     proc.ingest(item)
                     break
             else:
-                print("DataStream error - Can't procces element in stream:",
+                print("DataStream error - Can't proccess element in stream:",
                       f"{item}")
 
-    def print_processor_stats(self) -> None:
+    def print_processors_stats(self) -> None:
         print("== DataStream statistics ==")
         if not self._processor:
             print("No processor found, no data")
             return
         for proc in self._processor:
-            name = type(proc).__name__.replace("Processor", " Processor")
+            name = proc.__class__.__name__.replace("Processor", " Processor")
             print(f"{name}: total {proc.get_total()} items processed",
                   f"remaining {proc.get_list_len()} on processor")
 
@@ -136,34 +136,39 @@ def main() -> None:
                  [{'log_level': 'WARNING',
                    'log_message': 'Telnet access! Use ssh instead'},
                   {'log_level': 'INFO',
-                  'log_message': 'User wil isconnected'}],
+                  'log_message': 'User wil is connected'}],
                  42,
                  ['Hi', 'five']]
     data_stream = DataStream()
     num_processor = NumericProcessor()
-    data_stream.register_processors(num_processor)
+    data_stream.register_processor(num_processor)
     data_stream.process_stream(data_list)
-    data_stream.print_processor_stats()
+    data_stream.print_processors_stats()
     print()
     print("Registering other data processors")
     text_processor = TextProcessor()
     log_processor = LogProcessor()
-    data_stream.register_processors(text_processor)
-    data_stream.register_processors(log_processor)
+    data_stream.register_processor(text_processor)
+    data_stream.register_processor(log_processor)
     print("Sending the same data again")
     data_stream.process_stream(data_list)
-    data_stream.print_processor_stats()
+    data_stream.print_processors_stats()
     print()
-    print("Consume some elements from the data processor:"
+    print("Consume some elements from the data processor:",
           "Numeric 3 Text 2 Log 1")
     for _ in range(3):
         num_processor.output()
     for _ in range(2):
         text_processor.output()
     log_processor.output()
-    data_stream.print_processor_stats()
+    data_stream.print_processors_stats()
 
 
 if __name__ == "__main__":
     print("=== Code Nexus - Data Stream ===")
-    main()
+    try:
+        main()
+    except IndexError as e:
+        print(f"Index error: {e}")
+    except KeyError as e:
+        print(f"Key error: {e}")
